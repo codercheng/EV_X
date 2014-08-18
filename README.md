@@ -6,15 +6,47 @@ EV_lib
 
 How to use
 =======
+---
 因为程序非常的简单，所以接口也非常的简单明了。
+###in your program###
+* 把src中的两个文件加入你的源文件
+* `#include <ev_loop.h>`
+
+
+---
+###demo###
+```c
+#include "ev_loop.h"
+#include <stdio.h>
+
+ev_loop_t * loop = NULL;
+
+void *cb_stdin(int fd, EV_TYPE events);
+
+int main() 
+{
+    /** 100: max count of events
+     *    1：use EPOLLET
+     */
+    loop = ev_create_loop(100, 1);
+	ev_register(loop, 0, EV_READ, cb_stdin);
+	ev_run_loop(loop);
+	return 0;
+}
+
+void *cb_stdin(int fd, EV_TYPE events) {
+	printf("you can read data now\n");
+	return NULL;
+}
+```
+---
 ###API###
-
-
 
 * 创建事件循环
 
 ```c
 //创建一个 event loop并返回
+//et = 1: 用EPOLLET 模式， =0： 用EPOLLLT模式
 ev_loop_t *ev_create_loop(int maxevent, int et);
 ```
 
@@ -43,4 +75,5 @@ int ev_stop(ev_loop_t *loop, int fd, EV_TYPE events)；
 
 ```c
 //最后一步，启动Loop，开始监听各种事件
-int e
+int ev_run_loop(ev_loop_t *loop);
+```
