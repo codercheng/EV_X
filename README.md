@@ -55,7 +55,7 @@ ev_loop_t *ev_create_loop(int maxevent, int et);
 ```c
 //在fd上注册感兴趣的events
 //当fd上events发生时，调用cb
-int ev_register(ev_loop_t*loop, int fd, EV_TYPE events, cb_func_t cb)；
+int ev_register(ev_loop_t*loop, int fd, EV_TYPE events, cb_func_t cb);
 ```
 * 注销fd
 
@@ -69,7 +69,7 @@ int ev_unregister(ev_loop_t *loop, int fd);
 ```c
 //这个不同于注销，而是只停止某个时间，比如fd上同时注册了
 //可读和可写event, 那么我可以值stop可读事件
-int ev_stop(ev_loop_t *loop, int fd, EV_TYPE events)；
+int ev_stop(ev_loop_t *loop, int fd, EV_TYPE events);
 ```
 * 启动loop
 
