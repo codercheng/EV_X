@@ -58,9 +58,8 @@ int ev_run_loop(ev_loop_t *loop);
 int tcp_server(int port);
 int setnonblocking(int fd);
 
+#endif
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
