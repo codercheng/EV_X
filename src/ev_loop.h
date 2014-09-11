@@ -1,6 +1,6 @@
 /***********************************************************************
  * @author simoncheng
- * @data 2014.8
+ * @date 2014.8
  * @version v0.1
  * this program is an encapsulation of the EPOLL API which is frequently
  * used in backend systems based on linux.
