@@ -139,16 +139,3 @@ int ev_io_clear(ev_loop_t *loop, int fd) {
 	loop->iomap[fd].ptr = NULL;
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
