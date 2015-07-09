@@ -13,12 +13,6 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-
-
 int ev_io_start(ev_loop_t *loop, int max_ev_num, int etmodel) {
 	loop->maxevent = max_ev_num;
 	loop->etmodel = etmodel;

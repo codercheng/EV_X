@@ -54,7 +54,7 @@ typedef void* (*cb_timer_t) (ev_loop_t *loop, struct ev_timer *timer);
 typedef struct ev_timer {
 	uint8_t repeat;  /* do once or forever*/
 	double timeout; /* e.g. 9.1 => 9.1 s*/
-	struct timespec to_ts;   /* timeout time in timespect type*/
+	struct timespec ts;   /* timeout time in timespect type*/
 	cb_timer_t cb;      /* callback function*/
 	
 	void * ptr;     /* for custom use*/
