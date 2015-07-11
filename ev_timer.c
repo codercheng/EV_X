@@ -52,7 +52,7 @@ void heap_percolate_down(ev_timer_t **heap, int pos, int heap_size) {
 	ev_timer_t *timer = heap[pos];
 	while (LCHILD(pos) <= heap_size) {
 		int s_pos = LCHILD(pos);
-		//right child exist and right is smaller 
+		/* right child exist and right is smaller */
 		if (s_pos + 1 <= heap_size && timer_cmp_lt(heap[s_pos + 1]->ts, heap[s_pos]->ts)) {
 			s_pos++;
 		}
@@ -69,17 +69,14 @@ void heap_percolate_down(ev_timer_t **heap, int pos, int heap_size) {
 static
 void heap_add(ev_loop_t *loop, ev_timer_t *timer) {
 	loop->heap[++(loop->heap_size)] = timer;
-	if (timer == NULL) {
-		//		printf("add timer,but timer == null\n");
-	}
-	//	printf("head_size_now:%d\n", loop->heap_size);
-	heap_percolate_up((ev_timer_t **)(loop->heap), loop->heap_size);
+	heap_percolate_up(loop->heap, loop->heap_size);
 }
 
+/* timeout --> ts, which is the expired time */
 static
 struct timespec double2timespec(double timeout) {
-	int sec = (int)timeout;
-	int nsec = (int)((timeout - sec) * 1000000000);
+	long long int sec = (long long int)timeout;
+	long long int nsec = (long long int)((timeout - (double)sec) * 1000000000);
 
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -105,7 +102,7 @@ void heap_pop(ev_loop_t *loop) {
 	loop->heap[1] = loop->heap[loop->heap_size];
 	loop->heap[loop->heap_size] = NULL;
 	loop->heap_size--;
-	heap_percolate_down((ev_timer_t **)loop->heap, 1, loop->heap_size);
+	heap_percolate_down(loop->heap, 1, loop->heap_size);
 }
 
 /* get next timeout */
@@ -113,6 +110,7 @@ static
 struct timespec get_next_ts(ev_loop_t *loop) {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
+	/* process timeout events*/
 	while (heap_top(loop->heap) != NULL && !timer_cmp_lt(ts, heap_top(loop->heap)->ts)) {
 		//////////////////////////////////////////
 		//heap != null, and delete all the cb==null timer in the head
@@ -134,18 +132,34 @@ struct timespec get_next_ts(ev_loop_t *loop) {
 			heap_top(loop->heap)->ts = double2timespec(heap_top(loop->heap)->timeout);
 			heap_percolate_down(loop->heap, 1, loop->heap_size);
 		}
+		/* important: update the current time, because you */
+		/* never know how long the callback func costs  */
+		clock_gettime(CLOCK_MONOTONIC, &ts);
 	}
+
+	/* set to 0 to disarm the timer*/
 	if (heap_top(loop->heap) == NULL) {
 		ts.tv_sec = 0;
 		ts.tv_nsec = 0;
 		return ts;
 	}
+
+#ifdef EV_TEST
+	printf(".............. *****.*********\n");
+	printf("after heap:... %ld.%ld\n", heap_top(loop->heap)->ts.tv_sec, heap_top(loop->heap)->ts.tv_nsec);
+	printf("after   ts:... %ld.%ld\n", ts.tv_sec, ts.tv_nsec);
+#endif
+
+	long int sec_tmp  = heap_top(loop->heap)->ts.tv_sec;
+	long int nsec_tmp = heap_top(loop->heap)->ts.tv_nsec;
+
 	if (ts.tv_nsec > heap_top(loop->heap)->ts.tv_nsec) {
-		heap_top(loop->heap)->ts.tv_sec--;
-		heap_top(loop->heap)->ts.tv_nsec += 1000000000;
+		sec_tmp--;
+		nsec_tmp += 1000000000;
 	}
-	ts.tv_sec = heap_top(loop->heap)->ts.tv_sec - ts.tv_sec;
-	ts.tv_nsec = heap_top(loop->heap)->ts.tv_nsec - ts.tv_nsec;
+	ts.tv_sec = sec_tmp - ts.tv_sec;
+	ts.tv_nsec = nsec_tmp - ts.tv_nsec;
+
 	return ts;
 }
 
@@ -222,14 +236,14 @@ int ev_timer_register(ev_loop_t *loop, double timeout, cb_timer_t cb, uint8_t re
 		loop->heap = temp;
 	}
 
+	ev_timer_t *timer = (ev_timer_t*)malloc(sizeof(ev_timer_t));
+	if (timer == NULL) {
+		fprintf(stderr, "ERROR: malloc error:%s\n", strerror(errno));
+		return -1;
+	}
 	struct timespec ts;
 	ts = double2timespec(timeout);
 
-	ev_timer_t *timer = (ev_timer_t*)malloc(sizeof(ev_timer_t));
-	if (timer == NULL) {
-		fprintf(stderr, "malloc error:%s\n", strerror(errno));
-		return -1;
-	}
 	timer->timeout = timeout;
 	timer->ts = ts;
 	timer->cb = cb;
@@ -237,18 +251,23 @@ int ev_timer_register(ev_loop_t *loop, double timeout, cb_timer_t cb, uint8_t re
 	timer->ptr = ptr;
 
 	heap_add(loop, timer);
-	if (loop->heap_size == 1) {
+
+	/* two special conditions which need to settime */
+	/* 1. first timer event                         */
+	/* 2. the newly add timer is the new heap top   */
+	/*    that means new's ts < old heap top's ts   */
+	if (loop->heap_size == 1 || heap_top(loop->heap) == timer) {
 		ts = get_next_ts(loop);
 		struct itimerspec newValue;
 		bzero(&newValue, sizeof(newValue));
 		newValue.it_value = ts;
+
 		if (timerfd_settime(loop->timer_fd, 0, &newValue, NULL) != 0) {
 			fprintf(stderr, "ERROR: timerfd_settime error: %s\n", strerror(errno));
 			return -1;
 		}
 	}
-	/*TODO: the ts is smaller than head top*/
-	/***************************************/
+	
 	return 0;
 }
 int ev_timer_unregister(ev_loop_t *loop, ev_timer_t *timer) {
