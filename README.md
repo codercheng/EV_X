@@ -18,7 +18,21 @@ How to use
 * 把src中的两个文件加入你的源文件
 * `#include <ev_loop.h>`
 
+TestCase
+======
+* timer
+	* 后加入的timer反而比目前已经注册的timer先到期的情况
+	* timer 数量由0变1,和由1变0需要特别注意，都需要timerfd_settime，前者设置为给定值，后者置0
+	* ts为0和负的情况，考虑到
+	* 单次和无限循序定时混合test
+	* timer 10000 count
 
+* IO
+
+* valgrind memleak test && leak fd test
+```
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./demo
+```
 ---
 ###demo###
 ```c
