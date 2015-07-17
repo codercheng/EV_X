@@ -13,8 +13,7 @@ extern int ev_io_unregister(ev_loop_t* loop, int fd);
 extern int ev_io_stop(ev_loop_t* loop, int fd, EV_TYPE events);
 extern int ev_io_clear(ev_loop_t* loop, int fd);
 
-
-
+/* timer event */
 extern int ev_timer_start(ev_loop_t *loop, int capacity);
 extern int ev_timer_register(ev_loop_t *loop, double timeout, cb_timer_t cb, uint8_t repeat, void *ptr);
 extern int ev_timer_unregister(ev_loop_t *loop, ev_timer_t *timer);

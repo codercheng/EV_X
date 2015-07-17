@@ -39,9 +39,9 @@ typedef void* (*cb_io_t) (ev_loop_t *loop, int fd, EV_TYPE events);
 typedef struct ev_io {
 	int active;
 
-	EV_TYPE events;
-	cb_io_t cb_read;
-	cb_io_t cb_write;
+	EV_TYPE events;      /* EV_READ / EV_WRITE*/
+	cb_io_t cb_read;     /* EV_READ callback function */
+	cb_io_t cb_write;    /* EV_WRITE callback function */
 
 	/*for custom use*/
 	void *ptr; 
@@ -52,12 +52,12 @@ typedef struct ev_io {
 typedef void* (*cb_timer_t) (ev_loop_t *loop, struct ev_timer *timer);
 
 typedef struct ev_timer {
-	uint8_t repeat;  /* do once or forever*/
-	double timeout; /* e.g. 9.1 => 9.1 s*/
-	struct timespec ts;   /* timeout time in timespect type*/
-	cb_timer_t cb;      /* callback function*/
+	uint8_t repeat;        /* do once or forever*/
+	double timeout;        /* e.g. 9.1 => 9.1 s*/
+	struct timespec ts;    /* timeout time in timespect type*/
+	cb_timer_t cb;         /* callback function*/
 	
-	void * ptr;     /* for custom use*/
+	void * ptr;            /* for custom use*/
 } ev_timer_t;
 
 
