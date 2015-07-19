@@ -1,3 +1,12 @@
+###目录
+* [ABOUT](#about)
+* [DEMO](#demo)
+	* [ev_httpd](#ev_httpd)
+	* [simple_demo](#simple_demo)
+* [API](#apis)
+* [TEST](#test)
+
+<a name="about"></a>
 ABOUT
 ======
 这是一个基于epoll+timerfd的事件回调库。目前支持`io读写`事件，和`定时`事件。
@@ -7,10 +16,24 @@ ABOUT
 * web server中用到了io事件回调来处理连接，同时用到了定时事件来处理Keep-alive的情况
 * 在线聊天室中后台用到了定时事件，来做ajax long polling的定时
 
-DEMO
-=======
----
-因为程序非常的简单，所以接口也非常的简单明了。
+<a name="demo"></a>
+###DEMO###
+<a name="ev_httpd"></a>
+**ev_httpd**
+* 这是一个基于此回调库而写的一个简单高效的http server, 该server能轻松应对并发问题(单进程+eventloop+IO复用+非阻塞IO).
+该httpd目前的功能很简单，接收http请求，返回“hello evlib”。
+*
+```
+make
+./ev_httpd 8080
+```
+* 打开浏览器，http://127.0.0.1:8080/
+
+
+<a name="simple_demo"></a>
+**simple demo**
+
+这是一个最简单的demo，可以清楚的看到event loop的用法，io/timer事件相关操作的用法。
 ###in your program###
 * SYNOPSIS
 ```
@@ -52,7 +75,7 @@ void *cb_timer1(ev_loop_t *loop, struct ev_timer *timer) {
 }
 
 ```
----
+<a name="apis"></a>
 ###API###
 `具体可以在ev_loop.h ev_type.h 中查看`
 
@@ -123,7 +146,7 @@ int ev_timer_register(ev_loop_t *loop, double timeout, cb_timer_t cb, uint8_t re
 ```c
 int ev_timer_unregister(ev_loop_t *loop, ev_timer_t *timer);
 ```
-
+<a name="test"></a>
 TestCase
 ======
 * timer
