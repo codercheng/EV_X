@@ -1,8 +1,11 @@
-all: simple_demo ev_httpd
+all: libevlib.a simple_demo ev_httpd
 OBJ := ev_loop.o ev_io.o ev_timer.o
 CC := gcc
 DEBUG := -g -Wall
 LFLAG := -lrt
+
+libevlib.a: $(OBJ)
+	ar crv $@ $^
 
 ev_httpd: ev_httpd.o $(OBJ)
 	$(CC) $(DEBUG) $< $(OBJ) -o $@ $(LFLAG)
@@ -23,4 +26,4 @@ ev_timer.o: ev_timer.c ev_loop.h ev_type.h
 	$(CC) $(DEBUG) -c $<
 
 clean:
-	rm *.o simple_demo ev_httpd -f
+	rm *.o libevlib.a simple_demo ev_httpd -f
