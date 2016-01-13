@@ -66,7 +66,7 @@ int main()
 }
 
 void *cb_stdin1(ev_loop_t *loop, int fd, EV_TYPE events) {
-    printf("You hava data to read\n");
+    printf("You have data to read\n");
     return NULL;
 }
 void *cb_timer1(ev_loop_t *loop, struct ev_timer *timer) {
