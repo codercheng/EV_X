@@ -112,13 +112,7 @@ int ev_io_unregister(ev_loop_t* loop, int fd) {
 
 int ev_io_stop(ev_loop_t* loop, int fd, EV_TYPE events) {
 	if (loop->iomap[fd].active && (loop->iomap[fd].events & events)) {
-		if ((loop->iomap[fd].events & EV_READ) && (events & EV_READ)) {
-			loop->iomap[fd].events &= (~EV_READ);
-		}
-		if ((loop->iomap[fd].events & EV_WRITE) && (events & EV_WRITE)) {
-			loop->iomap[fd].events &= (~EV_WRITE);
-		}
-
+		loop->iomap[fd].events &= (~events);
 		struct epoll_event ev;
 		ev.events = loop->iomap[fd].events;
 		if (loop->etmodel) {
