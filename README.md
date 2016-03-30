@@ -2,7 +2,7 @@
 * [ABOUT](#about)
 * [DEMO](#demo)
 	* [ev_httpd](#ev_httpd)
-	* [simple_demo](#simple_demo)
+	* [ev_demo](#simple_demo)
 * [API](#apis)
 * [TEST](#test)
 
@@ -31,9 +31,12 @@ make
 
 
 <a name="simple_demo"></a>
-**simple demo**
+**ev demo**
 
 这是一个最简单的demo，可以清楚的看到event loop的用法，io/timer事件相关操作的用法。
+`这个ev_demo，主要是监听stdin的可读事件，当stdin有数据
+可读，那么打印you have data to read. 同时程序里面监听了定时事件，每隔5s打印Timeout。`
+
 ###in your program###
 * SYNOPSIS
 ```
