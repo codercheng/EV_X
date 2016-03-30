@@ -13,10 +13,12 @@
 #include <string.h>
 #include <stdint.h>
 
+#define MINEVENTNUMBER 128
+
 int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel) {
     /* set a default minumum num of evnets*/
-    if (max_ev_num < 128) {
-        max_ev_num = 128;
+    if (max_ev_num < MINEVENTNUMBER) {
+        max_ev_num = MINEVENTNUMBER;
     }
     loop->maxevent = max_ev_num;
 	loop->etmodel = etmodel;
