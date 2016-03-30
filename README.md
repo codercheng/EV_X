@@ -58,10 +58,10 @@ int main()
 {
     loop = ev_create_loop();
 
-    ev_io_start(loop, 100, 1);
+    ev_io_init(loop, 100, 1);
     ev_io_register(loop, 0, EV_READ, cb_stdin1, NULL);
     
-    ev_timer_start(loop, 10);
+    ev_timer_init(loop, 10);
     ev_timer_register(loop, 5.0, cb_timer1, 1, NULL);
 
     ev_run_loop(loop);
@@ -99,10 +99,10 @@ int ev_run_loop(ev_loop_t *loop);
 ```
 
 **io event**
-* 启动io事件
+* 初始化io事件
 ```c
 // et = 1: 用EPOLLET 模式， =0： 用EPOLLLT模式
-int ev_io_start(ev_loop_t *loop, int max_ev_num, int etmodel);
+int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel);
 ```
 
 * 注册io事件(`EV_READ, EV_WRITE`)到循环中
@@ -130,11 +130,11 @@ int ev_io_stop(ev_loop_t *loop, int fd, EV_TYPE events);
 ```
 **timer event**
 
-* 开启定时事件
+* 初始化定时事件
 
 ```c
 // capacity: 初始化timer可达数量
-int ev_timer_start(ev_loop_t *loop, int capacity);
+int ev_timer_init(ev_loop_t *loop, int capacity);
 ```
 
 * 注册定时事件
