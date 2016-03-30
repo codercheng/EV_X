@@ -89,7 +89,7 @@ void *cb_parse_request(ev_loop_t *loop, int fd, EV_TYPE events) {
     }
     return NULL;
 }
-#define OUTPUT_STRING "hello evlib"
+#define OUTPUT_STRING "hello evlib!"
 
 void *cb_do_response(ev_loop_t *loop, int fd, EV_TYPE events) {
     //printf("in write\n");

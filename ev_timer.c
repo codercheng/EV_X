@@ -16,6 +16,8 @@
 #define RCHILD(x) (LSHIFT(x)|1)
 #define PARENT(x) (RSHIFT(x))
 
+#define ONESECOND 1000000000 //in nanosecond
+
 static
 int timer_cmp_lt(struct timespec ts1, struct timespec ts2) {
 	if (ts1.tv_sec > ts2.tv_sec) {
@@ -76,14 +78,14 @@ void heap_add(ev_loop_t *loop, ev_timer_t *timer) {
 static
 struct timespec double2timespec(double timeout) {
 	long long int sec = (long long int)timeout;
-	long long int nsec = (long long int)((timeout - (double)sec) * 1000000000);
+	long long int nsec = (long long int)((timeout - (double)sec) * ONESECOND);
 
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	ts.tv_sec += sec;
 	ts.tv_nsec += nsec;
-	if (ts.tv_nsec >= 1000000000) {
-		ts.tv_nsec %= 1000000000;
+	if (ts.tv_nsec >= ONESECOND) {
+		ts.tv_nsec %= ONESECOND;
 		ts.tv_sec++;
 	}
 	return ts;
@@ -155,7 +157,7 @@ struct timespec get_next_ts(ev_loop_t *loop) {
 
 	if (ts.tv_nsec > heap_top(loop->heap)->ts.tv_nsec) {
 		sec_tmp--;
-		nsec_tmp += 1000000000;
+		nsec_tmp += ONESECOND;
 	}
 	ts.tv_sec = sec_tmp - ts.tv_sec;
 	ts.tv_nsec = nsec_tmp - ts.tv_nsec;
