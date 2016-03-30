@@ -45,6 +45,9 @@ int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel) {
 }
 
 int ev_io_register(ev_loop_t* loop, int fd, EV_TYPE events, cb_io_t cb, void *ptr) {
+    if (fd >= loop->maxevent) {
+        return -1;
+    }
 	if (!(events & EV_READ || events & EV_WRITE)) {
 		fprintf(stderr, "invalid events\n");
 		return -1;
