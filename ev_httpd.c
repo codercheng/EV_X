@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     }
 
     loop = ev_create_loop();
-    ev_io_start(loop, 1024, 0);
+    ev_io_init(loop, 1024, 0);
     ret = ev_io_register(loop, listen_sock, EV_READ,  cb_accept, NULL);
     if (ret == -1) {
         fprintf(stderr, "register listen sock error\n");

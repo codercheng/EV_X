@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdint.h>
 
-int ev_io_start(ev_loop_t *loop, int max_ev_num, int etmodel) {
+int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel) {
     /* set a default minumum num of evnets*/
     if (max_ev_num < 128) {
         max_ev_num = 128;

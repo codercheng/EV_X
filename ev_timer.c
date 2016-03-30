@@ -187,7 +187,7 @@ void* cb_check_timer(ev_loop_t *loop, int tfd, EV_TYPE events) {
 
 ///////////////////////////////////////////////////////////////////
 
-int ev_timer_start(ev_loop_t *loop, int capacity) {
+int ev_timer_init(ev_loop_t *loop, int capacity) {
 	loop->heap = (ev_timer_t**)malloc((capacity + 1)*sizeof(ev_timer_t*));
 	if (loop->heap == NULL) {
 		fprintf(stderr, "ERROR: no enough memory!\n");

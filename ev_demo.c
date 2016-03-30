@@ -14,10 +14,10 @@ int main()
 {
     loop = ev_create_loop();
 
-    ev_io_start(loop, 100, 1);
+    ev_io_init(loop, 100, 1);
     ev_io_register(loop, 0, EV_READ, cb_stdin1, NULL);
     
-    ev_timer_start(loop, 10);
+    ev_timer_init(loop, 10);
     ev_timer_register(loop, 5.0, cb_timer1, 1, NULL);
 
     ev_run_loop(loop);
