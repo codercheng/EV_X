@@ -21,6 +21,7 @@ typedef struct ev_loop {
 	/* io */
 	int epfd;
 	int maxevent;
+    int io_cnt;
 	int etmodel;
 	struct epoll_event *events;
 	struct ev_io *iomap;

@@ -10,33 +10,29 @@
 #include <unistd.h>
 #include <sys/timerfd.h>
 
+#define FOURTH_MIN_HEAP
+
 #define RSHIFT(x) ((x) >> 1)
 #define LSHIFT(x) ((x) << 1)
-#define LCHILD(x) LSHIFT(x)
-#define RCHILD(x) (LSHIFT(x)|1)
-#define PARENT(x) (RSHIFT(x))
+//#define RCHILD(x) (LSHIFT(x)|1)
+
+#ifdef FOURTH_MIN_HEAP
+    #define LCHILD(x) ((x) * 4 - 2)
+    #define PARENT(x) (((x) + 2) / 4)
+#else
+    #define LCHILD(x) LSHIFT(x)
+    #define PARENT(x) (RSHIFT(x))
+#endif
 
 #define ONESECOND 1000000000 //in nanosecond
 
 static
 int timer_cmp_lt(struct timespec ts1, struct timespec ts2) {
-	if (ts1.tv_sec > ts2.tv_sec) {
+	if (ts1.tv_sec > ts2.tv_sec || 
+        (ts1.tv_sec == ts2.tv_sec && ts1.tv_nsec >= ts2.tv_nsec)) {
 		return 0;
-	}
-	else if (ts1.tv_sec == ts2.tv_sec) {
-		if (ts1.tv_nsec > ts2.tv_nsec) {
-			return 0;
-		}
-		else if (ts1.tv_nsec == ts2.tv_nsec) {
-			return 0;
-		}
-		else {
-			return 1;
-		}
-	}
-	else {
-		return 1;
-	}
+	} 
+	return 1;
 }
 
 static
@@ -54,10 +50,18 @@ void heap_percolate_down(ev_timer_t **heap, int pos, int heap_size) {
 	ev_timer_t *timer = heap[pos];
 	while (LCHILD(pos) <= heap_size) {
 		int s_pos = LCHILD(pos);
+#ifdef FOURTH_MIN_HEAP
+        int cnt = 4;
+#else
+        int cnt = 2;
+#endif
 		/* right child exist and right is smaller */
-		if (s_pos + 1 <= heap_size && timer_cmp_lt(heap[s_pos + 1]->ts, heap[s_pos]->ts)) {
-			s_pos++;
-		}
+        int i = 1;
+        for (; i < cnt; i++) {
+            if (s_pos + 1 <= heap_size && timer_cmp_lt(heap[s_pos + 1]->ts, heap[s_pos]->ts)) {
+                s_pos++;
+            }
+        }
 
 		if (timer_cmp_lt(timer->ts, heap[s_pos]->ts)) {
 			break;

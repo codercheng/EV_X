@@ -14,19 +14,22 @@ clock_t b;
 #define NUM 5000000
 int main() 
 {
+    int i;
     loop = ev_create_loop();
 
     ev_io_init(loop, 100, 1);
-    ev_io_register(loop, 0, EV_READ, cb_stdin1, NULL);
+    for (i=0; i<1000; i++)
+        ev_io_register(loop, 0, EV_READ, cb_stdin1, NULL);
     
-    ev_timer_init(loop, 10);
-    int i;
+    ev_timer_init(loop, NUM);
     b = clock();
     for (i=0; i<NUM; i++)
-        ev_timer_register(loop, 0.00000001*(rand()%NUM), cb_timer1, 0, NULL);
+        ev_timer_register(loop, 0.000001*(rand()%NUM), cb_timer1, 0, NULL);
     
-    printf("%f\n", 1.0 * (clock() - b)/CLOCKS_PER_SEC);
-    sleep(10);
+    double s = 1.0*(clock() - b)/CLOCKS_PER_SEC;
+    printf("%f, %f\n", s, NUM/s);
+    
+    sleep(6);
     printf("begin...\n");
     ev_run_loop(loop);
     return 0;
@@ -43,7 +46,8 @@ void *cb_timer1(ev_loop_t *loop, struct ev_timer *timer) {
         b = clock();
     }
     if (cnt == NUM) {
-        printf("%f\n", 1.0*(clock() - b)/CLOCKS_PER_SEC);
+        double s = 1.0*(clock() - b)/CLOCKS_PER_SEC;
+        printf("%f, %f\n", s, NUM/s);
     }
     return NULL;
 }

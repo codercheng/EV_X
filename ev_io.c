@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#define MINEVENTNUMBER 128
+#define MINEVENTNUMBER 1024
 
 int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel) {
     /* set a default minumum num of evnets*/
@@ -21,6 +21,7 @@ int ev_io_init(ev_loop_t *loop, int max_ev_num, int etmodel) {
         max_ev_num = MINEVENTNUMBER;
     }
     loop->maxevent = max_ev_num;
+    loop->io_cnt = 0;
 	loop->etmodel = etmodel;
 	loop->events = (struct epoll_event *)malloc(max_ev_num * sizeof(struct epoll_event));
 	if (loop->events == NULL) {
@@ -98,6 +99,7 @@ int ev_io_register(ev_loop_t* loop, int fd, EV_TYPE events, cb_io_t cb, void *pt
 				ev_io_unregister(loop, fd);
 				return -1;
 			}
+            loop->io_cnt++;
 		}
 	}
 	loop->iomap[fd].active = 1;
@@ -136,6 +138,7 @@ int ev_io_stop(ev_loop_t* loop, int fd, EV_TYPE events) {
 
 
 int ev_io_clear(ev_loop_t *loop, int fd) {
+    loop->io_cnt--;
 	loop->iomap[fd].active = 0;
 	loop->iomap[fd].cb_read = NULL;
 	loop->iomap[fd].cb_write = NULL;
